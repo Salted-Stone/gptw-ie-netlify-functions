@@ -4,6 +4,8 @@
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
 
+  const data = JSON.parse(body);
+
   /* const values = {
     multiselect: [
       {
@@ -33,7 +35,7 @@ exports.handler = async function (event, context) {
     e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
   } */
 
-  return new Response(body, { status: 200 });
+  return new Response(data, { status: 200 });
 
   // return new Response("Sorry, no access for you.", { status: 401 });
 };
