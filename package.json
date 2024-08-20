@@ -1,0 +1,10 @@
+{
+  "name": "gptw-ie-functions",
+  "version": "1.0.0",
+  "description": "GPTW IE Functions",
+  "author": "Salted Stone Inc. <dev@saltedstone.com",
+  "license": "MIT",
+  "dependencies": {
+    "@hubspot/api-client": "^11.2.0"
+  }
+}
