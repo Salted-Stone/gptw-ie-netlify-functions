@@ -38,6 +38,11 @@ exports.handler = async function (event, context) {
   return {
     body: JSON.stringify(data),
     statusCode: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, OPTION",
+    },
   };
 
   // return new Response("Sorry, no access for you.", { status: 401 });
