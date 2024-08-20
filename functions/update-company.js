@@ -35,7 +35,10 @@ exports.handler = async function (event, context) {
     e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
   } */
 
-  return new Response(data, { status: 200 });
+  return {
+    body: JSON.stringify(data),
+    statusCode: 200,
+  };
 
   // return new Response("Sorry, no access for you.", { status: 401 });
 };
