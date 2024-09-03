@@ -8,7 +8,9 @@ exports.handler = async function (event, context) {
     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin',
     'Content-Type': 'application/json',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Max-Age': '8640'
+    'Access-Control-Max-Age': '8640',
+    'Access-Control-Allow-Origin': "*",
+    'Vary': 'Origin'
   }
 
   const data = JSON.parse(body);
