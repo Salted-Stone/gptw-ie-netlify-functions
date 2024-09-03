@@ -49,7 +49,7 @@ try {
 
   console.log(data);
 
-  if (event.httpMethod === "OPTIONS") {
+  if (httpMethod === "OPTIONS") {
     console.log("OPTIONS request received");
     return;
   }
