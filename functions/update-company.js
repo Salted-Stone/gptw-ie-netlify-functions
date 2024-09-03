@@ -4,9 +4,7 @@
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
   const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Origin": "https://8428394.hs-sites.com/"
   };
 
   const data = JSON.parse(body);
