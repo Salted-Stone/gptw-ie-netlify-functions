@@ -11,11 +11,10 @@ exports.handler = async function (event, context) {
     "Access-Control-Max-Age": "8640",
   };
 
-  if (!body || httpMethod !== "POST") {
+  if (httpMethod === "OPTIONS") {
     return {
-      statusCode: 400,
+      statusCode: 200,
       HEADERS,
-      body: JSON.stringify({ status: "Invalid http method" }),
     };
   }
 
