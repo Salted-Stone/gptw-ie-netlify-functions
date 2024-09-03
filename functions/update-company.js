@@ -2,16 +2,19 @@
 // const hubspotClient = new hubspot.Client({ accessToken: process.env.HS_API_TOKEN });
 
 exports.handler = async function (event, context) {
-  const { body, httpMethod, headers } = event;
-  
-  const headersTest = {
-    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin',
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Max-Age': '8640',
-    'Access-Control-Allow-Origin': "*",
-    'Vary': 'Origin'
-  }
+  const { body, httpMethod } = event;
+
+  let HEADERS = {
+    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin",
+    "Content-Type": "application/json", //optional
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "8640",
+  };
+
+  //This solves the "No ‘Access-Control-Allow-Origin’ header is present on the requested resource."
+
+  HEADERS["Access-Control-Allow-Origin"] = "*";
+  HEADERS["Vary"] = "Origin";
 
   const data = JSON.parse(body);
 
@@ -44,12 +47,11 @@ try {
   e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
 } */
 
-  console.log(headers);
-  // console.log(data);
+  console.log(data);
 
   return {
     body: JSON.stringify({ data }),
-    headersTest,
+    HEADERS,
     statusCode: 200,
   };
 
