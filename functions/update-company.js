@@ -49,6 +49,11 @@ try {
 
   console.log(data);
 
+  if (event.httpMethod === "OPTIONS") {
+    console.log("OPTIONS request received");
+    return;
+  }
+
   return {
     body: JSON.stringify({ data }),
     HEADERS,
