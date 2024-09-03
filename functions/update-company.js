@@ -37,12 +37,12 @@ try {
 
   console.log(data);
 
-  // return {
-  //   body: JSON.stringify({ data }),
-  //   statusCode: 200,
-  // };
+  return {
+    body: JSON.stringify({ data }),
+    statusCode: 200,
+  };
 
-  return new Response(JSON.stringify({ data }), { status: 200 });
+  // return new Response(JSON.stringify({ data }), { status: 200 });
 
   // return new Response("Sorry, no access for you.", { status: 401 });
 };
