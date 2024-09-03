@@ -1,13 +1,6 @@
 [build]
   functions = "functions"
 
-[[redirects]]
-  from = "*"
-  to = "https://8428394.hs-sites.com"
-  status = 200
-  force = true
-  headers = {X-From = "Netlify"}
-
 [[headers]]
   for = "*"
     [headers.values]
