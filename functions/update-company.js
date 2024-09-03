@@ -3,9 +3,13 @@
 
 exports.handler = async function (event, context) {
   const { body, httpMethod, headers } = event;
+  
   const headersTest = {
-    "access-control-allow-origin": "*"
-  };
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin',
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '8640'
+  }
 
   const data = JSON.parse(body);
 
