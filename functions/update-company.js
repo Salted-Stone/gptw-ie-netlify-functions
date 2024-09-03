@@ -38,7 +38,8 @@ try {
   e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
 } */
 
-  console.log(data);
+  console.log(httpMethod);
+  // console.log(data);
 
   return {
     body: JSON.stringify({ data }),
