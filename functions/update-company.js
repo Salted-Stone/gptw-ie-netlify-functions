@@ -2,8 +2,8 @@
 // const hubspotClient = new hubspot.Client({ accessToken: process.env.HS_API_TOKEN });
 
 exports.handler = async function (event, context) {
-  const { body, httpMethod } = event;
-  const headers = {
+  const { body, httpMethod, headers } = event;
+  const headersTest = {
     "access-control-allow-origin": "*"
   };
 
@@ -38,12 +38,12 @@ try {
   e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
 } */
 
-  console.log(httpMethod);
+  console.log(headers);
   // console.log(data);
 
   return {
     body: JSON.stringify({ data }),
-    headers,
+    headersTest,
     statusCode: 200,
   };
 
