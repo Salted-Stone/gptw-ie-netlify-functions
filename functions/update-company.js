@@ -3,6 +3,10 @@
 
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
+  const headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
 
   const data = JSON.parse(body);
 
@@ -39,6 +43,7 @@ try {
 
   return {
     body: JSON.stringify({ data }),
+    headers,
     statusCode: 200,
   };
 
