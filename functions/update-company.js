@@ -11,6 +11,14 @@ exports.handler = async function (event, context) {
     "Access-Control-Max-Age": "8640",
   };
 
+  if (!body || httpMethod !== "POST") {
+    return {
+      statusCode: 400,
+      HEADERS,
+      body: JSON.stringify({ status: "Invalid http method" }),
+    };
+  }
+
   //This solves the "No ‘Access-Control-Allow-Origin’ header is present on the requested resource."
 
   HEADERS["Access-Control-Allow-Origin"] = "*";
