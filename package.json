@@ -5,6 +5,8 @@
   "author": "Salted Stone Inc. <dev@saltedstone.com",
   "license": "MIT",
   "dependencies": {
-    "@hubspot/api-client": "^11.2.0"
+    "@hubspot/api-client": "^11.2.0",
+    "axios": "^1.7.7",
+    "form-data": "^4.0.0"
   }
 }
