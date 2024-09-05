@@ -1,31 +1,17 @@
-// const hubspot = require("@hubspot/api-client");
-// const hubspotClient = new hubspot.Client({ accessToken: process.env.HS_API_TOKEN });
+const hubspot = require("@hubspot/api-client");
+const hubspotClient = new hubspot.Client({ accessToken: process.env.HS_API_TOKEN });
 
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
 
-  let HEADERS = {
-    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin",
-    "Content-Type": "application/json", //optional
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-    "Access-Control-Max-Age": "8640",
+  let headers = {
+    "Access-Control-Allow-Origin": "*",
   };
 
-  if (httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      HEADERS,
-    };
-  }
+  if (httpMethod === "POST") {
+    const data = JSON.parse(body);
 
-  //This solves the "No ‘Access-Control-Allow-Origin’ header is present on the requested resource."
-
-  HEADERS["Access-Control-Allow-Origin"] = "*";
-  HEADERS["Vary"] = "Origin";
-
-  const data = JSON.parse(body);
-
-  /* const values = {
+    /*   const values = {
   multiselect: [
     {
       id: "1",
@@ -43,31 +29,50 @@ exports.handler = async function (event, context) {
   text_column: "sample text value",
   number_column: 76,
 };
-const HubDbTableRowV3Request = { values };
-const tableIdOrName = "18579329";
-const rowId = "rowId";
+const HubDbTableRowV3Request = { values }; */
+    const tableIdOrName = process.env.HUBDB_TABLE_ID;
+    const limit = 1;
+    const email = data?.find(({ name }) => name === "company_email")?.value;
 
-try {
-  const apiResponse = await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(tableIdOrName, rowId, HubDbTableRowV3Request);
-  console.log(JSON.stringify(apiResponse, null, 2));
-} catch (e) {
-  e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
-} */
+    let query = new URLSearchParams();
 
-  console.log(data);
+    if (limit) {
+      query.set("limit", limit);
+    }
 
-  if (httpMethod === "OPTIONS") {
-    console.log("OPTIONS request received");
-    return;
+    if (email) {
+      query.set("email", email);
+    }
+
+    console.log(data);
+
+    if (email) {
+      try {
+        const response = await hubspotClient.apiRequest({
+          path: `/cms/v3/hubdb/tables/${tableIdOrName}/rows?${query.toString()}`,
+          method: "GET",
+        });
+        const json = await response.json();
+        console.log(JSON.stringify(json, null, 2));
+      } catch (e) {
+        e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
+      }
+
+      return {
+        body: JSON.stringify({ json }),
+        headers,
+        statusCode: 200,
+      };
+    } else {
+      return {
+        headers,
+        statusCode: 404,
+      };
+    }
+  } else {
+    return {
+      headers,
+      statusCode: 405,
+    };
   }
-
-  return {
-    body: JSON.stringify({ data }),
-    HEADERS,
-    statusCode: 200,
-  };
-
-  // return new Response(JSON.stringify({ data }), { status: 200 });
-
-  // return new Response("Sorry, no access for you.", { status: 401 });
 };
