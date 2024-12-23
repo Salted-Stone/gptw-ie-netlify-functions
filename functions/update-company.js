@@ -103,6 +103,18 @@ async function* asyncIterable(data) {
           setVal = values["featured_thumbnail"];
         }
         break;
+      case "word_from_the_top_image":
+        const topImage = await uploadFile(data["word_from_the_top_image"].file, data["word_from_the_top_image"].file_name);
+        if (topImage) {
+          values["word_from_the_top_image"] = {
+            url: topImage.url,
+            width: topImage.width,
+            height: topImage.height,
+            type: "image",
+          };
+          setVal = values["word_from_the_top_image"];
+        }
+        break;
       default:
         if (numFields.indexOf(key) !== -1) {
           values[key] = parseFloat(data[key]);
