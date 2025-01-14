@@ -115,6 +115,18 @@ async function* asyncIterable(data) {
           setVal = values["word_from_the_top_image"];
         }
         break;
+      case "culture_overview_image":
+        const cultureImage = await uploadFile(data["culture_overview_image"].file, data["culture_overview_image"].file_name);
+        if (cultureImage) {
+          values["culture_overview_image"] = {
+            url: cultureImage.url,
+            width: cultureImage.width,
+            height: cultureImage.height,
+            type: "image",
+          };
+          setVal = values["culture_overview_image"];
+        }
+        break;
       default:
         if (numFields.indexOf(key) !== -1) {
           values[key] = parseFloat(data[key]);
