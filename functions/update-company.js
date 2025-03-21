@@ -158,6 +158,7 @@ exports.handler = async function (event, context) {
     const tableIdOrName = process.env.HUBDB_TABLE_ID;
     const limit = 1;
     const email = data?.email;
+    const companyName = data?.name;
 
     const getAllVAlues = async () => {
       const allValues = new Object();
@@ -182,6 +183,10 @@ exports.handler = async function (event, context) {
 
     if (email) {
       query.set("email", email);
+    }
+
+    if (companyName) {
+      query.set("name", companyName);
     }
 
     if (email) {
