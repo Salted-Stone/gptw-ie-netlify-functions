@@ -165,7 +165,7 @@ exports.handler = async function (event, context) {
 
       for await (const res of asyncIterable(data)) {
         // console.log(res);
-        if (res?.name) {
+        if (res?.name && res?.name != 'email' && res?.name != 'name') {
           allValues[res.name] = res.value;
         }
       }
