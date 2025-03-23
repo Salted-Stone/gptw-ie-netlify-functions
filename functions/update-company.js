@@ -163,7 +163,7 @@ const saveLog = async function (values, rowName) {
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
   const dateNow = new Date();
-  const valuesLogs = { status: "", payload: body, date: dateNow.toISOString(), error_code: "" };
+  const valuesLogs = { status: "", payload: body, date: Date.now(), error_code: "" };
 
   let headers = {
     "Access-Control-Allow-Origin": "*",
