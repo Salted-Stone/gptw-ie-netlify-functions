@@ -148,7 +148,7 @@ async function* asyncIterable(data) {
 
 const saveLog = async function (values, rowName) {
   const tableIdLogs = process.env.HUBDB_LOGS_TABLE_ID;
-  const HubDbTableRowV3RequestLogs = { values: JSON.stringify(values), name: rowName };
+  const HubDbTableRowV3RequestLogs = { values: values, name: rowName };
 
   try {
     const apiResponse = await hubspotClient.cms.hubdb.rowsApi.createTableRow(tableIdLogs, HubDbTableRowV3RequestLogs);
@@ -227,6 +227,7 @@ exports.handler = async function (event, context) {
             name: "success",
             type: "option",
           };
+          valuesLogs.error_code = "200";
 
           await saveLog(valuesLogs, companyName);
 
