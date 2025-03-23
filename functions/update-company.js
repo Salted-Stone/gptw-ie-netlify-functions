@@ -162,6 +162,8 @@ const saveLog = async function (values, rowName) {
 
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
+  const dateNow = new Date();
+  const valuesLogs = { status: "", payload: data, date: dateNow.toISOString(), error_code: "" };
 
   let headers = {
     "Access-Control-Allow-Origin": "*",
@@ -173,7 +175,6 @@ exports.handler = async function (event, context) {
     const limit = 1;
     const email = data?.email;
     const companyName = data?.name;
-    const valuesLogs = { status: "", payload: data, date: Date.now(), error_code: "" };
 
     const getAllVAlues = async () => {
       const allValues = new Object();
@@ -222,7 +223,10 @@ exports.handler = async function (event, context) {
 
           const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
 
-          valuesLogs.status = "success";
+          valuesLogs.status = {
+            name: "success",
+            type: "option",
+          };
 
           await saveLog(valuesLogs, companyName);
 
@@ -232,7 +236,10 @@ exports.handler = async function (event, context) {
           };
         }
 
-        valuesLogs.status = "error";
+        valuesLogs.status = {
+          name: "error",
+          type: "option",
+        };
         valuesLogs.error_code = "404";
 
         await saveLog(valuesLogs, companyName);
@@ -242,7 +249,10 @@ exports.handler = async function (event, context) {
           statusCode: 404,
         };
       } catch (e) {
-        valuesLogs.status = "error";
+        valuesLogs.status = {
+          name: "error",
+          type: "option",
+        };
         valuesLogs.error_code = "500";
 
         await saveLog(valuesLogs, companyName);
@@ -254,7 +264,10 @@ exports.handler = async function (event, context) {
         };
       }
     } else {
-      valuesLogs.status = "error";
+      valuesLogs.status = {
+        name: "error",
+        type: "option",
+      };
       valuesLogs.error_code = "404";
 
       await saveLog(valuesLogs, companyName);
@@ -265,7 +278,10 @@ exports.handler = async function (event, context) {
       };
     }
   } else {
-    valuesLogs.status = "error";
+    valuesLogs.status = {
+      name: "error",
+      type: "option",
+    };
     valuesLogs.error_code = "405";
 
     await saveLog(valuesLogs, companyName);
