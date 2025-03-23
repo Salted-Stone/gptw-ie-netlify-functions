@@ -224,7 +224,7 @@ exports.handler = async function (event, context) {
 
           valuesLogs.status = "success";
 
-          saveLog(valuesLogs, companyName);
+          await saveLog(valuesLogs, companyName);
 
           return {
             headers,
@@ -235,7 +235,7 @@ exports.handler = async function (event, context) {
         valuesLogs.status = "error";
         valuesLogs.error_code = "404";
 
-        saveLog(valuesLogs, companyName);
+        await saveLog(valuesLogs, companyName);
 
         return {
           headers,
@@ -245,7 +245,7 @@ exports.handler = async function (event, context) {
         valuesLogs.status = "error";
         valuesLogs.error_code = "500";
 
-        saveLog(valuesLogs, companyName);
+        await saveLog(valuesLogs, companyName);
 
         e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
         return {
@@ -257,7 +257,7 @@ exports.handler = async function (event, context) {
       valuesLogs.status = "error";
       valuesLogs.error_code = "404";
 
-      saveLog(valuesLogs, companyName);
+      await saveLog(valuesLogs, companyName);
 
       return {
         headers,
@@ -268,7 +268,7 @@ exports.handler = async function (event, context) {
     valuesLogs.status = "error";
     valuesLogs.error_code = "405";
 
-    saveLog(valuesLogs, companyName);
+    await saveLog(valuesLogs, companyName);
 
     return {
       headers,
