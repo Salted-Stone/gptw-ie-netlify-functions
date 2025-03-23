@@ -146,6 +146,15 @@ async function* asyncIterable(data) {
   }
 }
 
+const saveLog = async function (values, rowName) {
+  const tableIdLogs = process.env.HUBDB_LOGS_TABLE_ID;
+  const HubDbTableRowV3RequestLogs = { values, name: rowName };
+
+  const apiResponse = await hubspotClient.cms.hubdb.rowsApi.createTableRow(tableIdLogs, HubDbTableRowV3RequestLogs);
+
+  return apiResponse;
+};
+
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
 
@@ -159,13 +168,14 @@ exports.handler = async function (event, context) {
     const limit = 1;
     const email = data?.email;
     const companyName = data?.name;
+    const valuesLogs = { status: "", payload: data, date: Date.now(), error_code: "" };
 
     const getAllVAlues = async () => {
       const allValues = new Object();
 
       for await (const res of asyncIterable(data)) {
         // console.log(res);
-        if (res?.name && res?.name != 'email' && res?.name != 'name') {
+        if (res?.name && res?.name != "email" && res?.name != "name") {
           allValues[res.name] = res.value;
         }
       }
@@ -207,17 +217,31 @@ exports.handler = async function (event, context) {
 
           const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
 
+          valuesLogs.status = "success";
+
+          saveLog(valuesLogs, companyName);
+
           return {
             headers,
             statusCode: 200,
           };
         }
 
+        valuesLogs.status = "error";
+        valuesLogs.error_code = "404";
+
+        saveLog(valuesLogs, companyName);
+
         return {
           headers,
           statusCode: 404,
         };
       } catch (e) {
+        valuesLogs.status = "error";
+        valuesLogs.error_code = "500";
+
+        saveLog(valuesLogs, companyName);
+
         e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
         return {
           headers,
@@ -225,12 +249,22 @@ exports.handler = async function (event, context) {
         };
       }
     } else {
+      valuesLogs.status = "error";
+      valuesLogs.error_code = "404";
+
+      saveLog(valuesLogs, companyName);
+
       return {
         headers,
         statusCode: 404,
       };
     }
   } else {
+    valuesLogs.status = "error";
+    valuesLogs.error_code = "405";
+
+    saveLog(valuesLogs, companyName);
+
     return {
       headers,
       statusCode: 405,
