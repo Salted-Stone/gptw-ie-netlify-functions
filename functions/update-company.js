@@ -150,9 +150,14 @@ const saveLog = async function (values, rowName) {
   const tableIdLogs = process.env.HUBDB_LOGS_TABLE_ID;
   const HubDbTableRowV3RequestLogs = { values, name: rowName };
 
-  const apiResponse = await hubspotClient.cms.hubdb.rowsApi.createTableRow(tableIdLogs, HubDbTableRowV3RequestLogs);
+  try {
+    const apiResponse = await hubspotClient.cms.hubdb.rowsApi.createTableRow(tableIdLogs, HubDbTableRowV3RequestLogs);
+    return apiResponse;
+  } catch (e) {
+    e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
 
-  return apiResponse;
+    return false;
+  }
 };
 
 exports.handler = async function (event, context) {
