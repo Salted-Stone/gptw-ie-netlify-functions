@@ -37,7 +37,7 @@ const uploadFile = async (file, fileName) => {
   }
 };
 
-async function* asyncIterable(data) {
+async function* asyncIterable(data, valuesLogs) {
   const keys = Object.keys(data);
   const values = new Object();
   const numFields = ["statistic", "tenure_2years", "tenure_6_10years", "tenure_11_15years", "tenure_16_20years", "tenure_over_20years"];
@@ -89,6 +89,7 @@ async function* asyncIterable(data) {
             type: "image",
           };
           setVal = values["company_logo"];
+          valuesLogs.payload["company_logo"] = logo.url;
         }
         break;
       case "featured_thumbnail":
@@ -101,6 +102,7 @@ async function* asyncIterable(data) {
             type: "image",
           };
           setVal = values["featured_thumbnail"];
+          valuesLogs.payload["featured_thumbnail"] = thumb.url;
         }
         break;
       case "word_from_the_top_image":
@@ -113,6 +115,7 @@ async function* asyncIterable(data) {
             type: "image",
           };
           setVal = values["word_from_the_top_image"];
+          valuesLogs.payload["word_from_the_top_image"] = topImage.url;
         }
         break;
       case "culture_overview_image":
@@ -125,6 +128,7 @@ async function* asyncIterable(data) {
             type: "image",
           };
           setVal = values["culture_overview_image"];
+          valuesLogs.payload["culture_overview_image"] = cultureImage.url;
         }
         break;
       default:
@@ -179,7 +183,7 @@ exports.handler = async function (event, context) {
     const getAllVAlues = async () => {
       const allValues = new Object();
 
-      for await (const res of asyncIterable(data)) {
+      for await (const res of asyncIterable(data, valuesLogs)) {
         // console.log(res);
         if (res?.name && res?.name != "email" && res?.name != "name") {
           allValues[res.name] = res.value;
