@@ -37,7 +37,7 @@ const uploadFile = async (file, fileName) => {
   }
 };
 
-async function* asyncIterable(data, valuesLogs) {
+async function* asyncIterable(data) {
   const keys = Object.keys(data);
   const values = new Object();
   const numFields = ["statistic", "tenure_2years", "tenure_6_10years", "tenure_11_15years", "tenure_16_20years", "tenure_over_20years"];
@@ -165,6 +165,11 @@ exports.handler = async function (event, context) {
   const dateNow = new Date();
   const valuesLogs = { status: "", payload: body, date: Date.now(), error_code: "" };
 
+  console.log(valuesLogs.payload["company_logo"]);
+  console.log(valuesLogs.payload["featured_thumbnail"]);
+  console.log(valuesLogs.payload["word_from_the_top_image"]);
+  console.log(valuesLogs.payload["culture_overview_image"]);
+
   if (typeof valuesLogs.payload["company_logo"] !== "undefined") {
     valuesLogs.payload["company_logo"] = valuesLogs.payload["company_logo"].file_name;
   }
@@ -192,7 +197,7 @@ exports.handler = async function (event, context) {
     const getAllVAlues = async () => {
       const allValues = new Object();
 
-      for await (const res of asyncIterable(data, valuesLogs)) {
+      for await (const res of asyncIterable(data)) {
         // console.log(res);
         if (res?.name && res?.name != "email" && res?.name != "name") {
           allValues[res.name] = res.value;
