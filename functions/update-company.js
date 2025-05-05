@@ -163,25 +163,7 @@ const saveLog = async function (values, rowName) {
 exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
   const dateNow = new Date();
-  const valuesLogs = { status: "", payload: body, date: Date.now(), error_code: "" };
-
-  console.log(valuesLogs.payload["company_logo"]);
-  console.log(valuesLogs.payload["featured_thumbnail"]);
-  console.log(valuesLogs.payload["word_from_the_top_image"]);
-  console.log(valuesLogs.payload["culture_overview_image"]);
-
-  if (typeof valuesLogs.payload["company_logo"] !== "undefined") {
-    valuesLogs.payload["company_logo"] = valuesLogs.payload["company_logo"].file_name;
-  }
-  if (typeof valuesLogs.payload["featured_thumbnail"] !== "undefined") {
-    valuesLogs.payload["featured_thumbnail"] = valuesLogs.payload["featured_thumbnail"].file_name;
-  }
-  if (typeof valuesLogs.payload["word_from_the_top_image"] !== "undefined") {
-    valuesLogs.payload["word_from_the_top_image"] = valuesLogs.payload["word_from_the_top_image"].file_name;
-  }
-  if (typeof valuesLogs.payload["culture_overview_image"] !== "undefined") {
-    valuesLogs.payload["culture_overview_image"] = valuesLogs.payload["culture_overview_image"].file_name;
-  }
+  const valuesLogs = { status: "", payload: "", date: Date.now(), error_code: "" };
 
   let headers = {
     "Access-Control-Allow-Origin": "*",
@@ -193,6 +175,28 @@ exports.handler = async function (event, context) {
     const limit = 1;
     const email = data?.email;
     const companyName = data?.name;
+
+    valuesLogs.payload = data;
+
+    if (typeof data["company_logo"] !== "undefined") {
+      valuesLogs.payload["company_logo"] = data["company_logo"].file_name;
+    }
+    if (typeof data["featured_thumbnail"] !== "undefined") {
+      valuesLogs.payload["featured_thumbnail"] = data["featured_thumbnail"].file_name;
+    }
+    if (typeof data["word_from_the_top_image"] !== "undefined") {
+      valuesLogs.payload["word_from_the_top_image"] = data["word_from_the_top_image"].file_name;
+    }
+    if (typeof data["culture_overview_image"] !== "undefined") {
+      valuesLogs.payload["culture_overview_image"] = data["culture_overview_image"].file_name;
+    }
+
+    console.log(valuesLogs.payload.company_logo);
+    console.log(valuesLogs.payload.featured_thumbnail);
+    console.log(valuesLogs.payload.word_from_the_top_image);
+    console.log(valuesLogs.payload.culture_overview_image);
+
+    valuesLogs.payload = JSON.stringify(valuesLogs.payload);
 
     const getAllVAlues = async () => {
       const allValues = new Object();
