@@ -191,12 +191,8 @@ exports.handler = async function (event, context) {
       valuesLogs.payload["culture_overview_image"] = data["culture_overview_image"].file_name;
     }
 
-    console.log(valuesLogs.payload.company_logo);
-    console.log(valuesLogs.payload.featured_thumbnail);
-    console.log(valuesLogs.payload.word_from_the_top_image);
-    console.log(valuesLogs.payload.culture_overview_image);
-
     valuesLogs.payload = JSON.stringify(valuesLogs.payload);
+    console.log(valuesLogs);
 
     const getAllVAlues = async () => {
       const allValues = new Object();
