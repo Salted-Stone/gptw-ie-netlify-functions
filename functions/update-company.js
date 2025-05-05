@@ -89,7 +89,6 @@ async function* asyncIterable(data, valuesLogs) {
             type: "image",
           };
           setVal = values["company_logo"];
-          valuesLogs.payload["company_logo"] = logo.url;
         }
         break;
       case "featured_thumbnail":
@@ -102,7 +101,6 @@ async function* asyncIterable(data, valuesLogs) {
             type: "image",
           };
           setVal = values["featured_thumbnail"];
-          valuesLogs.payload["featured_thumbnail"] = thumb.url;
         }
         break;
       case "word_from_the_top_image":
@@ -115,7 +113,6 @@ async function* asyncIterable(data, valuesLogs) {
             type: "image",
           };
           setVal = values["word_from_the_top_image"];
-          valuesLogs.payload["word_from_the_top_image"] = topImage.url;
         }
         break;
       case "culture_overview_image":
@@ -128,7 +125,6 @@ async function* asyncIterable(data, valuesLogs) {
             type: "image",
           };
           setVal = values["culture_overview_image"];
-          valuesLogs.payload["culture_overview_image"] = cultureImage.url;
         }
         break;
       default:
@@ -168,6 +164,19 @@ exports.handler = async function (event, context) {
   const { body, httpMethod } = event;
   const dateNow = new Date();
   const valuesLogs = { status: "", payload: body, date: Date.now(), error_code: "" };
+
+  if (typeof valuesLogs.payload["company_logo"] !== "undefined") {
+    valuesLogs.payload["company_logo"] = valuesLogs.payload["company_logo"].file_name;
+  }
+  if (typeof valuesLogs.payload["featured_thumbnail"] !== "undefined") {
+    valuesLogs.payload["featured_thumbnail"] = valuesLogs.payload["featured_thumbnail"].file_name;
+  }
+  if (typeof valuesLogs.payload["word_from_the_top_image"] !== "undefined") {
+    valuesLogs.payload["word_from_the_top_image"] = valuesLogs.payload["word_from_the_top_image"].file_name;
+  }
+  if (typeof valuesLogs.payload["culture_overview_image"] !== "undefined") {
+    valuesLogs.payload["culture_overview_image"] = valuesLogs.payload["culture_overview_image"].file_name;
+  }
 
   let headers = {
     "Access-Control-Allow-Origin": "*",
