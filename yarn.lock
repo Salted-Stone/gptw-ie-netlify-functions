@@ -339,7 +339,7 @@
   resolved "https://registry.npmjs.org/@sentry/core/-/core-9.23.0.tgz"
   integrity sha512-9846pn/BvASGgl7WsnKY4xry98WreP9ToeLfCQTQOf+pNfD/qNPn1/0xPInGni3LVMAXRtfHHMPm2Ghz255N7A==
 
-"@sentry/node@9.23.0":
+"@sentry/node@^9.23.0", "@sentry/node@9.23.0":
   version "9.23.0"
   resolved "https://registry.npmjs.org/@sentry/node/-/node-9.23.0.tgz"
   integrity sha512-s+s8vjeXg4hNRiEAfLvABI2UOnW84UC/VScXqA9J4eceQsHwKxUb/BKT5vqDKoYTs99YxEGZq9TeC+lchd0ZHw==

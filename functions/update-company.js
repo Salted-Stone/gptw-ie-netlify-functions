@@ -1,4 +1,4 @@
-const Sentry = require("@sentry/aws-serverless");
+const Sentry = require("@sentry/node");
 const { nodeProfilingIntegration } = require("@sentry/profiling-node");
 
 Sentry.init({
@@ -35,7 +35,7 @@ const uploadFile = async (file, fileName) => {
     if (!file || !file.includes(",")) {
       throw new Error("Invalid file format");
     }
-    
+
     const buffer = Buffer.from(file.split(",")[1], "base64");
 
     form.append("file", buffer, { filename: fileName });
@@ -190,12 +190,13 @@ const saveLog = async function (values, rowName) {
     return apiResponse;
   } catch (e) {
     e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
-
+    Sentry.captureException(e);
+    await Sentry.flush(2000);
     return false;
   }
 };
 
-exports.handler = Sentry.wrapHandler(async (event, context) => {
+exports.handler = async (event, context) => {
   const { body, httpMethod } = event;
   // const dateNow = new Date();
   const valuesLogs = { status: "", payload: "", date: Date.now(), error_code: "" };
@@ -221,47 +222,47 @@ exports.handler = Sentry.wrapHandler(async (event, context) => {
   let headers = {
     "Access-Control-Allow-Origin": "*",
   };
+  
+  try {
+    if (httpMethod === "POST") {
+      const data = JSON.parse(body);
+      const tableIdOrName = process.env.HUBDB_TABLE_ID;
+      const limit = 1;
+      const email = data?.email;
+      const companyName = data?.name;
 
-  if (httpMethod === "POST") {
-    const data = JSON.parse(body);
-    const tableIdOrName = process.env.HUBDB_TABLE_ID;
-    const limit = 1;
-    const email = data?.email;
-    const companyName = data?.name;
+      const getAllValues = async () => {
+        const allValues = {};
 
-    const getAllValues = async () => {
-      const allValues = {};
-
-      for await (const res of asyncIterable(data)) {
-        // console.log(res);
-        if (res?.name && res?.name != "email" && res?.name != "name") {
-          allValues[res.name] = res.value;
+        for await (const res of asyncIterable(data)) {
+          // console.log(res);
+          if (res?.name && res?.name != "email" && res?.name != "name") {
+            allValues[res.name] = res.value;
+          }
         }
+
+        return allValues;
+      };
+
+      const spanPrepare = Sentry.startSpan({ op: "prepareData", description: "Preparing all values" });
+      const values = await getAllValues();
+      spanPrepare.end();
+
+      let query = new URLSearchParams();
+
+      if (limit) {
+        query.set("limit", limit);
       }
 
-      return allValues;
-    };
+      if (email) {
+        query.set("email", email);
+      }
 
-    const spanPrepare = Sentry.startSpan({ op: "prepareData", description: "Preparing all values" });
-    const values = await getAllValues();
-    spanPrepare.end();
+      if (companyName) {
+        query.set("name", companyName);
+      }
 
-    let query = new URLSearchParams();
-
-    if (limit) {
-      query.set("limit", limit);
-    }
-
-    if (email) {
-      query.set("email", email);
-    }
-
-    if (companyName) {
-      query.set("name", companyName);
-    }
-
-    if (email) {
-      try {
+      if (email) {
         const response = await hubspotClient.apiRequest({
           path: `/cms/v3/hubdb/tables/${tableIdOrName}/rows?${query.toString()}`,
           method: "GET",
@@ -308,19 +309,18 @@ exports.handler = Sentry.wrapHandler(async (event, context) => {
           headers,
           statusCode: 404,
         };
-      } catch (e) {
+      } else {
         valuesLogs.status = {
           name: "error",
           type: "option",
         };
-        valuesLogs.error_code = "500";
+        valuesLogs.error_code = "400";
 
         await saveLog(valuesLogs, companyName);
 
-        e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
         return {
           headers,
-          statusCode: 500,
+          statusCode: 400,
         };
       }
     } else {
@@ -328,27 +328,32 @@ exports.handler = Sentry.wrapHandler(async (event, context) => {
         name: "error",
         type: "option",
       };
-      valuesLogs.error_code = "400";
+      valuesLogs.error_code = "405";
 
       await saveLog(valuesLogs, companyName);
 
       return {
         headers,
-        statusCode: 400,
+        statusCode: 405,
       };
     }
-  } else {
+  } catch (e) {
     valuesLogs.status = {
       name: "error",
       type: "option",
     };
-    valuesLogs.error_code = "405";
+    valuesLogs.error_code = "500";
 
     await saveLog(valuesLogs, companyName);
 
+    e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
+
+    Sentry.captureException(e);
+    await Sentry.flush(2000);
+
     return {
       headers,
-      statusCode: 405,
+      statusCode: 500,
     };
   }
-});
+};
