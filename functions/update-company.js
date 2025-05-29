@@ -222,15 +222,14 @@ exports.handler = async (event, context) => {
   let headers = {
     "Access-Control-Allow-Origin": "*",
   };
-  
+  const data = JSON.parse(body);
+  const tableIdOrName = process.env.HUBDB_TABLE_ID;
+  const limit = 1;
+  const email = data?.email;
+  const companyName = data?.name;
+
   try {
     if (httpMethod === "POST") {
-      const data = JSON.parse(body);
-      const tableIdOrName = process.env.HUBDB_TABLE_ID;
-      const limit = 1;
-      const email = data?.email;
-      const companyName = data?.name;
-
       const getAllValues = async () => {
         const allValues = {};
 
