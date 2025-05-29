@@ -23,7 +23,7 @@
   dependencies:
     "@opentelemetry/api" "^1.3.0"
 
-"@opentelemetry/api@^1.0.0", "@opentelemetry/api@^1.1.0", "@opentelemetry/api@^1.3.0", "@opentelemetry/api@^1.7.0", "@opentelemetry/api@^1.8", "@opentelemetry/api@^1.9.0", "@opentelemetry/api@>=1.0.0 <1.10.0":
+"@opentelemetry/api@^1.1.0", "@opentelemetry/api@^1.3.0", "@opentelemetry/api@^1.7.0", "@opentelemetry/api@^1.8", "@opentelemetry/api@^1.9.0", "@opentelemetry/api@>=1.0.0 <1.10.0":
   version "1.9.0"
   resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz"
   integrity sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==
@@ -47,25 +47,6 @@
   dependencies:
     "@opentelemetry/core" "^1.8.0"
     "@opentelemetry/instrumentation" "^0.57.1"
-    "@opentelemetry/semantic-conventions" "^1.27.0"
-
-"@opentelemetry/instrumentation-aws-lambda@0.50.3":
-  version "0.50.3"
-  resolved "https://registry.npmjs.org/@opentelemetry/instrumentation-aws-lambda/-/instrumentation-aws-lambda-0.50.3.tgz"
-  integrity sha512-kotm/mRvSWUauudxcylc5YCDei+G/r+jnOH6q5S99aPLQ/Ms8D2yonMIxEJUILIPlthEmwLYxkw3ualWzMjm/A==
-  dependencies:
-    "@opentelemetry/instrumentation" "^0.57.1"
-    "@opentelemetry/semantic-conventions" "^1.27.0"
-    "@types/aws-lambda" "8.10.147"
-
-"@opentelemetry/instrumentation-aws-sdk@0.49.1":
-  version "0.49.1"
-  resolved "https://registry.npmjs.org/@opentelemetry/instrumentation-aws-sdk/-/instrumentation-aws-sdk-0.49.1.tgz"
-  integrity sha512-Vbj4BYeV/1K4Pbbfk+gQ8gwYL0w+tBeUwG88cOxnF7CLPO1XnskGV8Q3Gzut2Ah/6Dg17dBtlzEqL3UiFP2Z6A==
-  dependencies:
-    "@opentelemetry/core" "^1.8.0"
-    "@opentelemetry/instrumentation" "^0.57.1"
-    "@opentelemetry/propagation-utils" "^0.30.16"
     "@opentelemetry/semantic-conventions" "^1.27.0"
 
 "@opentelemetry/instrumentation-connect@0.43.1":
@@ -262,11 +243,6 @@
     semver "^7.5.2"
     shimmer "^1.2.1"
 
-"@opentelemetry/propagation-utils@^0.30.16":
-  version "0.30.16"
-  resolved "https://registry.npmjs.org/@opentelemetry/propagation-utils/-/propagation-utils-0.30.16.tgz"
-  integrity sha512-ZVQ3Z/PQ+2GQlrBfbMMMT0U7MzvYZLCPP800+ooyaBqm4hMvuQHfP028gB9/db0mwkmyEAMad9houukUVxhwcw==
-
 "@opentelemetry/redis-common@^0.36.2":
   version "0.36.2"
   resolved "https://registry.npmjs.org/@opentelemetry/redis-common/-/redis-common-0.36.2.tgz"
@@ -313,25 +289,12 @@
   dependencies:
     "@opentelemetry/instrumentation" "^0.52.0 || ^0.53.0 || ^0.54.0 || ^0.55.0 || ^0.56.0 || ^0.57.0"
 
-"@sentry/aws-serverless@^9.23.0":
-  version "9.23.0"
-  resolved "https://registry.npmjs.org/@sentry/aws-serverless/-/aws-serverless-9.23.0.tgz"
-  integrity sha512-4gt70D7lOND1DqO03001fTDS7J5QcT6iYQt/rjgV1IOc4JzI20PYye/TwIoio5/SelI8ZAQaBkXO0KNw/iQJVw==
-  dependencies:
-    "@opentelemetry/api" "^1.9.0"
-    "@opentelemetry/instrumentation" "^0.57.2"
-    "@opentelemetry/instrumentation-aws-lambda" "0.50.3"
-    "@opentelemetry/instrumentation-aws-sdk" "0.49.1"
-    "@sentry/core" "9.23.0"
-    "@sentry/node" "9.23.0"
-    "@types/aws-lambda" "^8.10.62"
-
 "@sentry/core@9.23.0":
   version "9.23.0"
   resolved "https://registry.npmjs.org/@sentry/core/-/core-9.23.0.tgz"
   integrity sha512-9846pn/BvASGgl7WsnKY4xry98WreP9ToeLfCQTQOf+pNfD/qNPn1/0xPInGni3LVMAXRtfHHMPm2Ghz255N7A==
 
-"@sentry/node@^9.23.0", "@sentry/node@9.23.0":
+"@sentry/node@^9.23.0":
   version "9.23.0"
   resolved "https://registry.npmjs.org/@sentry/node/-/node-9.23.0.tgz"
   integrity sha512-s+s8vjeXg4hNRiEAfLvABI2UOnW84UC/VScXqA9J4eceQsHwKxUb/BKT5vqDKoYTs99YxEGZq9TeC+lchd0ZHw==
@@ -377,16 +340,6 @@
   integrity sha512-+wliK4kkBiCEcgzsU/SQBWK0Lteny4fZjeNpz1AMGnWdWA1UlvD+rabkl25L6pRrGHBtj2xiZ55xL0ZCkRlhVA==
   dependencies:
     "@sentry/core" "9.23.0"
-
-"@types/aws-lambda@^8.10.62":
-  version "8.10.149"
-  resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.149.tgz"
-  integrity sha512-NXSZIhfJjnXqJgtS7IwutqIF/SOy1Wz5Px4gUY1RWITp3AYTyuJS4xaXr/bIJY1v15XMzrJ5soGnPM+7uigZjA==
-
-"@types/aws-lambda@8.10.147":
-  version "8.10.147"
-  resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.147.tgz"
-  integrity sha512-nD0Z9fNIZcxYX5Mai2CTmFD7wX7UldCkW2ezCF8D1T5hdiLsnTWDGRpfRYntU6VjTdLQjOvyszru7I1c1oCQew==
 
 "@types/connect@3.4.38":
   version "3.4.38"
