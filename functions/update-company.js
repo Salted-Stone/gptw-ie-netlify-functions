@@ -13,9 +13,6 @@ const FormData = require("form-data");
 const hubspotClient = new hubspot.Client({ accessToken: process.env.HS_API_TOKEN });
 
 const uploadFile = async (file, fileName) => {
-  // Start a Sentry span for the uploadFile operation
-  const span = Sentry.startSpan({ op: "uploadFile", description: "Uploading file to HubSpot" });
-
   const form = new FormData();
   const fileOptions = {
     access: "PUBLIC_NOT_INDEXABLE",
@@ -48,9 +45,6 @@ const uploadFile = async (file, fileName) => {
     e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
     // Optionally capture the exception in Sentry
     Sentry.captureException(e);
-  } finally {
-    // End the Sentry span
-    span.end();
   }
 };
 
@@ -233,9 +227,7 @@ exports.handler = async (event, context) => {
         return allValues;
       };
 
-      const spanPrepare = Sentry.startSpan({ op: "prepareData", description: "Preparing all values" });
       const values = await getAllValues();
-      spanPrepare.end();
 
       let query = new URLSearchParams();
 
@@ -263,14 +255,10 @@ exports.handler = async (event, context) => {
           const company = json.results[0];
           const HubDbTableRowV3Request = { values };
 
-          const spanUpdate = Sentry.startSpan({ op: "hubdb.updateRow", description: "Updating HubDB row" });
           const updateRow = await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(tableIdOrName, company.id, HubDbTableRowV3Request);
-          spanUpdate.end();
           // console.log(JSON.stringify(values, null, 2));
 
-          const spanPublish = Sentry.startSpan({ op: "hubdb.publishTable", description: "Publishing HubDB table" });
           const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
-          spanPublish.end();
 
           valuesLogs.status = {
             name: "success",
