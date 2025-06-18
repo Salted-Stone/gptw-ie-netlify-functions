@@ -196,7 +196,7 @@ exports.handler = async (event, context) => {
   }
   // Handle POST requests
   if (event.httpMethod === "POST") {
-    const { body, httpMethod } = event;
+    const { body } = event;
     // const dateNow = new Date();
     const valuesLogs = { status: "", payload: "", date: Date.now(), error_code: "" };
 
@@ -228,105 +228,90 @@ exports.handler = async (event, context) => {
     const companyName = data?.name;
 
     try {
-      if (httpMethod === "POST") {
-        const getAllValues = async () => {
-          const allValues = {};
+      const getAllValues = async () => {
+        const allValues = {};
 
-          for await (const res of asyncIterable(data)) {
-            // console.log(res);
-            if (res?.name && res?.name != "email" && res?.name != "name") {
-              allValues[res.name] = res.value;
-            }
+        for await (const res of asyncIterable(data)) {
+          // console.log(res);
+          if (res?.name && res?.name != "email" && res?.name != "name") {
+            allValues[res.name] = res.value;
           }
-
-          return allValues;
-        };
-
-        const values = await getAllValues();
-
-        let query = new URLSearchParams();
-
-        if (limit) {
-          query.set("limit", limit);
         }
 
-        if (email) {
-          query.set("email", email);
-        }
+        return allValues;
+      };
 
-        if (companyName) {
-          query.set("name", companyName);
-        }
+      const values = await getAllValues();
 
-        if (email) {
-          const response = await hubspotClient.apiRequest({
-            path: `/cms/v3/hubdb/tables/${tableIdOrName}/rows?${query.toString()}`,
-            method: "GET",
-          });
-          const json = await response.json();
-          // console.log(JSON.stringify(json, null, 2));
+      let query = new URLSearchParams();
 
-          if (json?.total) {
-            const company = json.results[0];
-            const HubDbTableRowV3Request = { values };
+      if (limit) {
+        query.set("limit", limit);
+      }
 
-            const updateRow = await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(tableIdOrName, company.id, HubDbTableRowV3Request);
-            // console.log(JSON.stringify(values, null, 2));
+      if (email) {
+        query.set("email", email);
+      }
 
-            const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
+      if (companyName) {
+        query.set("name", companyName);
+      }
 
-            valuesLogs.status = {
-              name: "success",
-              type: "option",
-            };
-            valuesLogs.error_code = "200";
+      if (email) {
+        const response = await hubspotClient.apiRequest({
+          path: `/cms/v3/hubdb/tables/${tableIdOrName}/rows?${query.toString()}`,
+          method: "GET",
+        });
+        const json = await response.json();
+        // console.log(JSON.stringify(json, null, 2));
 
-            await saveLog(valuesLogs, companyName);
+        if (json?.total) {
+          const company = json.results[0];
+          const HubDbTableRowV3Request = { values };
 
-            return {
-              headers,
-              statusCode: 200,
-            };
-          }
+          const updateRow = await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(tableIdOrName, company.id, HubDbTableRowV3Request);
+          // console.log(JSON.stringify(values, null, 2));
+
+          const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
 
           valuesLogs.status = {
-            name: "error",
+            name: "success",
             type: "option",
           };
-          valuesLogs.error_code = "404";
+          valuesLogs.error_code = "200";
 
           await saveLog(valuesLogs, companyName);
 
           return {
             headers,
-            statusCode: 404,
-          };
-        } else {
-          valuesLogs.status = {
-            name: "error",
-            type: "option",
-          };
-          valuesLogs.error_code = "400";
-
-          await saveLog(valuesLogs, companyName);
-
-          return {
-            headers,
-            statusCode: 400,
+            statusCode: 200,
           };
         }
-      } else {
+
         valuesLogs.status = {
           name: "error",
           type: "option",
         };
-        valuesLogs.error_code = "405";
+        valuesLogs.error_code = "404";
 
         await saveLog(valuesLogs, companyName);
 
         return {
           headers,
-          statusCode: 405,
+          statusCode: 404,
+        };
+      } else {
+        valuesLogs.status = {
+          name: "error",
+          type: "option",
+        };
+        valuesLogs.error_code = "400";
+
+        await saveLog(valuesLogs, companyName);
+
+        return {
+          headers,
+          statusCode: 400,
         };
       }
     } catch (e) {
