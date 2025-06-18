@@ -204,7 +204,9 @@ exports.handler = async (event, context) => {
   // console.log(valuesLogs);
 
   let headers = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": "https://greatplacetowork.ie",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "*"
   };
   const data = JSON.parse(body);
   const tableIdOrName = process.env.HUBDB_TABLE_ID;
