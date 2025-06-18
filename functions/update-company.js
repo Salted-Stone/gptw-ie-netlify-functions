@@ -181,158 +181,172 @@ const saveLog = async function (values, rowName) {
 };
 
 exports.handler = async (event, context) => {
-  const { body, httpMethod } = event;
-  // const dateNow = new Date();
-  const valuesLogs = { status: "", payload: "", date: Date.now(), error_code: "" };
-
-  valuesLogs.payload = JSON.parse(body);
-
-  if (typeof valuesLogs.payload["company_logo"] !== "undefined") {
-    valuesLogs.payload["company_logo"] = valuesLogs.payload["company_logo"].file_name;
+  // Handle preflight requests (OPTIONS method)
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "https://greatplacetowork.ie", // Allow only this origin
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS", // Allowed methods
+        "Access-Control-Allow-Headers": "Content-Type", // Allowed headers
+        "Access-Control-Max-Age": "86400", // Cache preflight response for 24 hours
+      },
+      body: "", // No body for OPTIONS requests
+    };
   }
-  if (typeof valuesLogs.payload["featured_thumbnail"] !== "undefined") {
-    valuesLogs.payload["featured_thumbnail"] = valuesLogs.payload["featured_thumbnail"].file_name;
-  }
-  if (typeof valuesLogs.payload["word_from_the_top_image"] !== "undefined") {
-    valuesLogs.payload["word_from_the_top_image"] = valuesLogs.payload["word_from_the_top_image"].file_name;
-  }
-  if (typeof valuesLogs.payload["culture_overview_image"] !== "undefined") {
-    valuesLogs.payload["culture_overview_image"] = valuesLogs.payload["culture_overview_image"].file_name;
-  }
+  // Handle POST requests
+  if (event.httpMethod === "POST") {
+    const { body, httpMethod } = event;
+    // const dateNow = new Date();
+    const valuesLogs = { status: "", payload: "", date: Date.now(), error_code: "" };
 
-  valuesLogs.payload = JSON.stringify(valuesLogs.payload);
-  // console.log(valuesLogs);
+    valuesLogs.payload = JSON.parse(body);
 
-  let headers = {
-    "Access-Control-Allow-Origin": "https://greatplacetowork.ie",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "*"
-  };
-  const data = JSON.parse(body);
-  const tableIdOrName = process.env.HUBDB_TABLE_ID;
-  const limit = 1;
-  const email = data?.email;
-  const companyName = data?.name;
+    if (typeof valuesLogs.payload["company_logo"] !== "undefined") {
+      valuesLogs.payload["company_logo"] = valuesLogs.payload["company_logo"].file_name;
+    }
+    if (typeof valuesLogs.payload["featured_thumbnail"] !== "undefined") {
+      valuesLogs.payload["featured_thumbnail"] = valuesLogs.payload["featured_thumbnail"].file_name;
+    }
+    if (typeof valuesLogs.payload["word_from_the_top_image"] !== "undefined") {
+      valuesLogs.payload["word_from_the_top_image"] = valuesLogs.payload["word_from_the_top_image"].file_name;
+    }
+    if (typeof valuesLogs.payload["culture_overview_image"] !== "undefined") {
+      valuesLogs.payload["culture_overview_image"] = valuesLogs.payload["culture_overview_image"].file_name;
+    }
 
-  try {
-    if (httpMethod === "POST") {
-      const getAllValues = async () => {
-        const allValues = {};
+    valuesLogs.payload = JSON.stringify(valuesLogs.payload);
+    // console.log(valuesLogs);
 
-        for await (const res of asyncIterable(data)) {
-          // console.log(res);
-          if (res?.name && res?.name != "email" && res?.name != "name") {
-            allValues[res.name] = res.value;
+    let headers = {
+      "Access-Control-Allow-Origin": "https://greatplacetowork.ie",
+    };
+    const data = JSON.parse(body);
+    const tableIdOrName = process.env.HUBDB_TABLE_ID;
+    const limit = 1;
+    const email = data?.email;
+    const companyName = data?.name;
+
+    try {
+      if (httpMethod === "POST") {
+        const getAllValues = async () => {
+          const allValues = {};
+
+          for await (const res of asyncIterable(data)) {
+            // console.log(res);
+            if (res?.name && res?.name != "email" && res?.name != "name") {
+              allValues[res.name] = res.value;
+            }
           }
+
+          return allValues;
+        };
+
+        const values = await getAllValues();
+
+        let query = new URLSearchParams();
+
+        if (limit) {
+          query.set("limit", limit);
         }
 
-        return allValues;
-      };
+        if (email) {
+          query.set("email", email);
+        }
 
-      const values = await getAllValues();
+        if (companyName) {
+          query.set("name", companyName);
+        }
 
-      let query = new URLSearchParams();
+        if (email) {
+          const response = await hubspotClient.apiRequest({
+            path: `/cms/v3/hubdb/tables/${tableIdOrName}/rows?${query.toString()}`,
+            method: "GET",
+          });
+          const json = await response.json();
+          // console.log(JSON.stringify(json, null, 2));
 
-      if (limit) {
-        query.set("limit", limit);
-      }
+          if (json?.total) {
+            const company = json.results[0];
+            const HubDbTableRowV3Request = { values };
 
-      if (email) {
-        query.set("email", email);
-      }
+            const updateRow = await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(tableIdOrName, company.id, HubDbTableRowV3Request);
+            // console.log(JSON.stringify(values, null, 2));
 
-      if (companyName) {
-        query.set("name", companyName);
-      }
+            const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
 
-      if (email) {
-        const response = await hubspotClient.apiRequest({
-          path: `/cms/v3/hubdb/tables/${tableIdOrName}/rows?${query.toString()}`,
-          method: "GET",
-        });
-        const json = await response.json();
-        // console.log(JSON.stringify(json, null, 2));
+            valuesLogs.status = {
+              name: "success",
+              type: "option",
+            };
+            valuesLogs.error_code = "200";
 
-        if (json?.total) {
-          const company = json.results[0];
-          const HubDbTableRowV3Request = { values };
+            await saveLog(valuesLogs, companyName);
 
-          const updateRow = await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(tableIdOrName, company.id, HubDbTableRowV3Request);
-          // console.log(JSON.stringify(values, null, 2));
-
-          const publishTable = await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(tableIdOrName);
+            return {
+              headers,
+              statusCode: 200,
+            };
+          }
 
           valuesLogs.status = {
-            name: "success",
+            name: "error",
             type: "option",
           };
-          valuesLogs.error_code = "200";
+          valuesLogs.error_code = "404";
 
           await saveLog(valuesLogs, companyName);
 
           return {
             headers,
-            statusCode: 200,
+            statusCode: 404,
+          };
+        } else {
+          valuesLogs.status = {
+            name: "error",
+            type: "option",
+          };
+          valuesLogs.error_code = "400";
+
+          await saveLog(valuesLogs, companyName);
+
+          return {
+            headers,
+            statusCode: 400,
           };
         }
-
-        valuesLogs.status = {
-          name: "error",
-          type: "option",
-        };
-        valuesLogs.error_code = "404";
-
-        await saveLog(valuesLogs, companyName);
-
-        return {
-          headers,
-          statusCode: 404,
-        };
       } else {
         valuesLogs.status = {
           name: "error",
           type: "option",
         };
-        valuesLogs.error_code = "400";
+        valuesLogs.error_code = "405";
 
         await saveLog(valuesLogs, companyName);
 
         return {
           headers,
-          statusCode: 400,
+          statusCode: 405,
         };
       }
-    } else {
+    } catch (e) {
       valuesLogs.status = {
         name: "error",
         type: "option",
       };
-      valuesLogs.error_code = "405";
+      valuesLogs.error_code = "500";
 
       await saveLog(valuesLogs, companyName);
 
+      e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
+
+      Sentry.captureException(e);
+      await Sentry.flush(2000);
+
       return {
         headers,
-        statusCode: 405,
+        statusCode: 500,
       };
     }
-  } catch (e) {
-    valuesLogs.status = {
-      name: "error",
-      type: "option",
-    };
-    valuesLogs.error_code = "500";
-
-    await saveLog(valuesLogs, companyName);
-
-    e.message === "HTTP request failed" ? console.error(JSON.stringify(e.response, null, 2)) : console.error(e);
-
-    Sentry.captureException(e);
-    await Sentry.flush(2000);
-
-    return {
-      headers,
-      statusCode: 500,
-    };
   }
 };
