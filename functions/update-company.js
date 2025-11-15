@@ -196,7 +196,6 @@ exports.handler = async (event, context) => {
   }
   // Handle POST requests
   if (event.httpMethod === "POST") {
-    console.log(process.env.HS_API_TOKEN)
     const { body } = event;
     // const dateNow = new Date();
     const valuesLogs = { status: "", payload: "", date: Date.now(), error_code: "" };
